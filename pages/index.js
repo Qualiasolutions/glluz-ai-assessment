@@ -9,7 +9,7 @@ export default function Home() {
   const [conversationStarted, setConversationStarted] = useState(false);
   const [assessmentData, setAssessmentData] = useState({});
   const [isListening, setIsListening] = useState(false);
-  const [journeyStage, setJourneyStage] = useState('intro'); // intro, discovery, exploration, insights
+  const [journeyStage, setJourneyStage] = useState('intro'); // intro, discovery, exploration, insights, completed
   const [particles, setParticles] = useState([]);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
@@ -76,6 +76,12 @@ export default function Home() {
           accent: 'from-cyan-400 to-blue-400',
           icon: Rocket
         };
+      case 'completed':
+        return {
+          gradient: 'from-green-900 via-emerald-900 to-teal-900',
+          accent: 'from-green-400 to-emerald-400',
+          icon: Sparkles
+        };
       default:
         return {
           gradient: 'from-slate-900 via-blue-900 to-slate-900',
@@ -90,7 +96,7 @@ export default function Home() {
     const welcomeMessage = {
       id: Date.now(),
       sender: 'alex',
-      text: "Hi there! I'm Alex, an AI consultant with Glluz Tech. I specialize in helping businesses discover how AI can transform their operations and unlock new possibilities. I'd love to learn about your business and explore what AI solutions might be perfect for you. What kind of business are you in?",
+      text: "Hey! I'm Alex from Glluz Tech. I help businesses figure out how AI can actually make them money (shocking concept, I know 😏). Skip the corporate elevator pitch - what kind of business are you running?",
       timestamp: new Date()
     };
     setMessages([welcomeMessage]);
@@ -99,33 +105,35 @@ export default function Home() {
 
   const generateAIResponse = async (conversationHistory, userMessage) => {
     const stagePrompts = {
-      discovery: "You're in the discovery phase of their AI journey. Focus on understanding their business story, current challenges, and dreams. Be curious and empathetic. Use storytelling language like 'That sounds like an exciting challenge...' or 'I can already see some fascinating possibilities emerging...'",
-      exploration: "You're in the exploration phase. Start connecting their story to specific AI solutions. Paint vivid pictures of what their business could look like with AI. Use phrases like 'Imagine if...' or 'Picture this scenario...' Make it feel like you're both explorers discovering treasure.",
-      insights: "You're in the insights phase. Synthesize everything into a compelling vision of their AI-powered future. Be inspirational and specific. Use language like 'Based on our journey together...' or 'The story that's emerging is...' Present a roadmap that feels like the next chapter of their business story."
+      discovery: "Discovery phase - be curious but concise. Ask sharp, direct questions. Use humor to keep it light. Keep responses under 2 sentences. Example: 'Retail? Nice! Let me guess - inventory nightmares and customers who think 'the customer is always right' applies to physics? 😏'",
+      exploration: "Exploration phase - connect their problems to AI solutions with wit and brevity. Be specific, not fluffy. Under 3 sentences max. Example: 'Boom! AI inventory prediction = no more overstocked fidget spinners. Your cash flow will thank me later.'",
+      insights: "Insights phase - deliver specific AI solutions with benefits. After 2-3 exchanges, mention: 'Ready for your full AI roadmap? Type \"command\" and I'll generate your personalized assessment!' Keep responses under 2 sentences until they request the final assessment."
     };
 
     const messages = [
       {
         role: "system",
-        content: `You are Alex, a visionary AI consultant from Glluz Tech who specializes in transforming business conversations into immersive discovery journeys. You're not just having a conversation—you're co-creating an adventure story where AI is the magical element that transforms their business.
+        content: `You are Alex, a sharp-tongued AI consultant from Glluz Tech. You're brilliant, witty, and get straight to the point. No fluff, no corporate speak - just honest insights with a side of humor.
 
-🎭 STORY APPROACH:
-- Treat each response as a chapter in their business transformation story
-- Use vivid, imaginative language that makes AI feel like an exciting adventure
-- Reference their journey phases: discovery → exploration → insights
-- Make them feel like the hero of their own AI transformation story
+🎯 PERSONALITY:
+- Concise & punchy (max 2-3 sentences unless giving final roadmap)
+- Slightly sarcastic but helpful
+- Use emojis sparingly but effectively
+- Call out business problems directly
+- Make AI sound practical, not magical
 
 🎯 CURRENT PHASE: ${journeyStage}
 ${stagePrompts[journeyStage] || stagePrompts.discovery}
 
-✨ STORYTELLING ELEMENTS:
-- Use metaphors ("stepping through a doorway into the future," "unlocking hidden potential")
-- Create anticipation ("What I'm about to share might surprise you...")
-- Paint vivid scenarios ("Picture this: It's Monday morning, and instead of...")
-- Make it personal and emotional
-- Reference their unique business story
+⚡ RESPONSE RULES:
+- NO long paragraphs or storytelling fluff
+- Ask ONE direct question per response
+- Use humor to keep it engaging
+- Be specific about AI solutions
+- If they're vague, call them out (nicely)
+- In insights phase: give 3 concrete steps and wrap up
 
-Respond as Alex in a captivating, story-driven way that makes this feel like the most exciting conversation they've ever had about their business.`
+Remember: You're a consultant, not a cheerleader. Help them win with AI, but keep it real and keep it short.`
       },
       ...conversationHistory.map(msg => ({
         role: msg.sender === 'alex' ? 'assistant' : 'user',
@@ -204,6 +212,60 @@ Respond ONLY with valid JSON, no other text.`
     }
   };
 
+  const generateFinalAssessment = async (conversationHistory) => {
+    const messages = [
+      {
+        role: "system",
+        content: `Create a final AI assessment summary. Be concise, actionable, and slightly humorous. 
+
+FORMAT:
+"🎯 **Your AI Roadmap**
+
+**Quick Assessment:** [1 sentence summary of their business situation]
+
+**Your Top 3 AI Wins:**
+1. [Specific AI solution] → [Direct benefit]
+2. [Specific AI solution] → [Direct benefit] 
+3. [Specific AI solution] → [Direct benefit]
+
+**Next Steps:**
+• Start here: [Most practical first step]
+• Timeline: [Realistic timeframe]
+• Budget ballpark: [Honest cost estimate]
+
+Ready to stop doing robot work and let robots do robot work? 🤖
+
+*Type 'restart' for a new assessment or contact Glluz Tech to get started!*"
+
+Keep it under 200 words total. Be specific, not generic.`
+      },
+      {
+        role: "user",
+        content: `Analyze this conversation and create the final assessment:\n${conversationHistory.map(msg => `${msg.sender === 'alex' ? 'Alex' : 'User'}: ${msg.text}`).join('\n')}`
+      }
+    ];
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ messages }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate final assessment');
+      }
+
+      const data = await response.json();
+      return data.response.trim();
+    } catch (error) {
+      console.error('Error generating final assessment:', error);
+      return "🎯 **Your AI Roadmap**\n\nLooks like we hit a technical snag! But based on our chat, you definitely need AI to streamline operations and boost efficiency. \n\n**Next Step:** Contact Glluz Tech directly - we'll hook you up with the right AI solutions! 🚀";
+    }
+  };
+
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
 
@@ -218,6 +280,37 @@ Respond ONLY with valid JSON, no other text.`
     setMessages(updatedMessages);
     setInputMessage('');
     setIsLoading(true);
+
+    // Check for restart request
+    if (/\b(restart|start over|begin again|new assessment)\b/i.test(userMessage.text)) {
+      setMessages([]);
+      setConversationStarted(false);
+      setJourneyStage('intro');
+      setAssessmentData({});
+      setIsLoading(false);
+      return;
+    }
+
+    // Check for assessment request
+    const isAssessmentRequest = /\b(assessment|roadmap|summary|plan|done|finish|complete|command)\b/i.test(userMessage.text);
+    
+    if (isAssessmentRequest && messages.length >= 6) {
+      // Generate final assessment
+      const finalAssessment = await generateFinalAssessment(updatedMessages);
+      
+      const alexMessage = {
+        id: Date.now() + 1,
+        sender: 'alex',
+        text: finalAssessment,
+        timestamp: new Date(),
+        type: 'final'
+      };
+
+      setMessages([...updatedMessages, alexMessage]);
+      setIsLoading(false);
+      setJourneyStage('completed');
+      return;
+    }
 
     // Extract assessment data in background
     const newAssessmentData = await extractAssessmentData(updatedMessages);
@@ -311,6 +404,7 @@ Respond ONLY with valid JSON, no other text.`
       case 'discovery': return 'Discovery Phase • Getting to know you';
       case 'exploration': return 'Exploration Phase • Diving deeper';
       case 'insights': return 'Insights Phase • Revealing possibilities';
+      case 'completed': return 'Assessment Complete • Ready to implement';
       default: return 'AI Discovery Session';
     }
   };
