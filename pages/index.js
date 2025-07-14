@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Head from 'next/head';
-import { Send, Mic, MicOff, Volume2, Sparkles, Zap, Brain, Rocket } from 'lucide-react';
+import { Send, Mic, MicOff, Volume2, VolumeX, Sparkles, Zap, Brain, Rocket } from 'lucide-react';
 
 export default function Home() {
   const [messages, setMessages] = useState([]);
@@ -9,6 +9,8 @@ export default function Home() {
   const [conversationStarted, setConversationStarted] = useState(false);
   const [assessmentData, setAssessmentData] = useState({});
   const [isListening, setIsListening] = useState(false);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const [journeyStage, setJourneyStage] = useState('intro'); // intro, discovery, exploration, insights, completed
   const [particles, setParticles] = useState([]);
   const messagesEndRef = useRef(null);
@@ -17,6 +19,60 @@ export default function Home() {
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const speakText = (text) => {
+    if (!voiceEnabled || !window.speechSynthesis) return;
+    
+    // Stop any current speech
+    window.speechSynthesis.cancel();
+    
+    // Clean text for speech (remove markdown and emojis)
+    const cleanText = text
+      .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold markdown
+      .replace(/\*(.*?)\*/g, '$1') // Remove italic markdown
+      .replace(/#{1,6}\s/g, '') // Remove headers
+      .replace(/[•→]/g, '') // Remove bullet points
+      .replace(/[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '') // Remove emojis
+      .replace(/\s+/g, ' ') // Clean up whitespace
+      .trim();
+
+    if (cleanText.length === 0) return;
+
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    
+    // Configure voice settings
+    utterance.rate = 1.1; // Slightly faster than default
+    utterance.pitch = 1.0; // Normal pitch
+    utterance.volume = 0.8; // Slightly quieter
+    
+    // Try to use a male voice for Alex
+    const voices = window.speechSynthesis.getVoices();
+    const preferredVoice = voices.find(voice => 
+      voice.name.toLowerCase().includes('male') || 
+      voice.name.toLowerCase().includes('daniel') ||
+      voice.name.toLowerCase().includes('alex') ||
+      voice.name.toLowerCase().includes('david')
+    );
+    
+    if (preferredVoice) {
+      utterance.voice = preferredVoice;
+    }
+
+    // Set speaking state
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const toggleVoice = () => {
+    setVoiceEnabled(!voiceEnabled);
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+    }
   };
 
   useEffect(() => {
@@ -29,6 +85,16 @@ export default function Home() {
     const interval = setInterval(generateParticles, 3000);
     return () => clearInterval(interval);
   }, [journeyStage]);
+
+  useEffect(() => {
+    // Load voices when component mounts
+    if (window.speechSynthesis) {
+      window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.getVoices();
+      };
+    }
+  }, []);
 
   const generateParticles = () => {
     const newParticles = Array.from({ length: 5 }, (_, i) => ({
@@ -100,7 +166,10 @@ export default function Home() {
       timestamp: new Date()
     };
     setMessages([welcomeMessage]);
-    setTimeout(() => inputRef.current?.focus(), 500);
+    setTimeout(() => {
+      inputRef.current?.focus();
+      speakText(welcomeMessage.text);
+    }, 1500);
   };
 
   const generateAIResponse = async (conversationHistory, userMessage) => {
@@ -309,6 +378,7 @@ Keep it under 200 words total. Be specific, not generic.`
       setMessages([...updatedMessages, alexMessage]);
       setIsLoading(false);
       setJourneyStage('completed');
+      setTimeout(() => speakText(finalAssessment), 500);
       return;
     }
 
@@ -329,13 +399,10 @@ Keep it under 200 words total. Be specific, not generic.`
 
     setMessages([...updatedMessages, alexMessage]);
     setIsLoading(false);
+    setTimeout(() => speakText(aiResponse), 500);
   };
 
 
-  const toggleVoice = () => {
-    setIsListening(!isListening);
-    // Voice functionality would be implemented here
-  };
 
   const theme = getJourneyTheme();
   const ThemeIcon = theme.icon;
@@ -485,6 +552,12 @@ Keep it under 200 words total. Be specific, not generic.`
                     <div className="flex items-center space-x-3 mb-3">
                       <div className={`w-3 h-3 bg-gradient-to-r ${theme.accent} rounded-full animate-pulse shadow-lg`}></div>
                       <span className="text-sm font-semibold text-white">Alex</span>
+                      {voiceEnabled && (
+                        <div className="flex items-center space-x-1">
+                          <Volume2 className="w-3 h-3 text-green-400" />
+                          <span className="text-xs text-green-300 font-medium">Speaking</span>
+                        </div>
+                      )}
                       {message.type === 'story' && (
                         <div className="flex items-center space-x-1">
                           <Sparkles className="w-4 h-4 text-yellow-400 animate-pulse" />
@@ -563,12 +636,13 @@ Keep it under 200 words total. Be specific, not generic.`
               <button
                 onClick={toggleVoice}
                 className={`p-4 rounded-2xl transition-all duration-300 transform hover:scale-110 ${
-                  isListening 
-                    ? 'bg-gradient-to-r from-red-500 to-pink-600 shadow-lg shadow-red-500/30' 
-                    : 'bg-white/15 hover:bg-white/25 border-2 border-white/30 backdrop-blur-xl'
-                }`}
+                  voiceEnabled 
+                    ? 'bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg shadow-green-500/30' 
+                    : 'bg-gradient-to-r from-red-500 to-pink-600 shadow-lg shadow-red-500/30'
+                } ${isSpeaking ? 'animate-pulse' : ''}`}
+                title={voiceEnabled ? 'Voice enabled - Alex will speak' : 'Voice disabled'}
               >
-                {isListening ? <MicOff className="w-6 h-6 text-white" /> : <Mic className="w-6 h-6 text-white" />}
+                {voiceEnabled ? <Volume2 className="w-6 h-6 text-white" /> : <VolumeX className="w-6 h-6 text-white" />}
               </button>
               
               <button
@@ -586,8 +660,14 @@ Keep it under 200 words total. Be specific, not generic.`
                 <Zap className="w-4 h-4" />
                 <span>Press Enter to continue your journey</span>
               </div>
-              <div className="text-xs text-white/50">
-                Journey Stage: {journeyStage.charAt(0).toUpperCase() + journeyStage.slice(1)}
+              <div className="flex items-center space-x-3">
+                <div className="text-xs text-white/50 flex items-center space-x-1">
+                  {voiceEnabled ? <Volume2 className="w-3 h-3" /> : <VolumeX className="w-3 h-3" />}
+                  <span>{voiceEnabled ? 'Alex speaks' : 'Silent mode'}</span>
+                </div>
+                <div className="text-xs text-white/50">
+                  {journeyStage.charAt(0).toUpperCase() + journeyStage.slice(1)}
+                </div>
               </div>
             </div>
           </div>
