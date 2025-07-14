@@ -11,6 +11,9 @@ export default function Home() {
   const [isListening, setIsListening] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [selectedVoice, setSelectedVoice] = useState(null);
+  const [availableVoices, setAvailableVoices] = useState([]);
+  const [showVoiceSelector, setShowVoiceSelector] = useState(false);
   const [journeyStage, setJourneyStage] = useState('intro'); // intro, discovery, exploration, insights, completed
   const [particles, setParticles] = useState([]);
   const messagesEndRef = useRef(null);
@@ -46,17 +49,10 @@ export default function Home() {
     utterance.pitch = 1.0; // Normal pitch
     utterance.volume = 0.8; // Slightly quieter
     
-    // Try to use a male voice for Alex
-    const voices = window.speechSynthesis.getVoices();
-    const preferredVoice = voices.find(voice => 
-      voice.name.toLowerCase().includes('male') || 
-      voice.name.toLowerCase().includes('daniel') ||
-      voice.name.toLowerCase().includes('alex') ||
-      voice.name.toLowerCase().includes('david')
-    );
-    
-    if (preferredVoice) {
-      utterance.voice = preferredVoice;
+    // Use the pre-selected best voice
+    if (selectedVoice) {
+      utterance.voice = selectedVoice;
+      console.log(`🎤 Alex speaking with: ${selectedVoice.name} (${selectedVoice.lang})`);
     }
 
     // Set speaking state
@@ -75,6 +71,12 @@ export default function Home() {
     }
   };
 
+  const testVoice = () => {
+    if (selectedVoice) {
+      speakText("Hey! This is Alex with the new voice. Pretty cool, right?");
+    }
+  };
+
   useEffect(() => {
     scrollToBottom();
     updateJourneyStage();
@@ -88,13 +90,79 @@ export default function Home() {
 
   useEffect(() => {
     // Load voices when component mounts
+    const loadVoices = () => {
+      if (window.speechSynthesis) {
+        const voices = window.speechSynthesis.getVoices();
+        setAvailableVoices(voices);
+        
+        // Auto-select best voice if none selected
+        if (!selectedVoice && voices.length > 0) {
+          const bestVoice = findBestVoice(voices);
+          setSelectedVoice(bestVoice);
+        }
+      }
+    };
+
+    loadVoices();
     if (window.speechSynthesis) {
-      window.speechSynthesis.getVoices();
-      window.speechSynthesis.onvoiceschanged = () => {
-        window.speechSynthesis.getVoices();
-      };
+      window.speechSynthesis.onvoiceschanged = loadVoices;
     }
-  }, []);
+  }, [selectedVoice]);
+
+  const findBestVoice = (voices) => {
+    console.log('🎤 Available voices:', voices.map(v => `${v.name} (${v.lang})`));
+    
+    // Priority patterns for cool, high-quality voices
+    const voiceRankings = [
+      // Tier 1: Premium/Neural voices (highest quality)
+      { pattern: /neural|enhanced|premium|natural|edge/i, score: 100 },
+      
+      // Tier 2: Cool male names
+      { pattern: /alex|daniel|david|ryan|mark|tom|james|chris|mike|aaron|ben|jack|max/i, score: 90 },
+      
+      // Tier 3: Cool female names (often higher quality than male defaults)
+      { pattern: /samantha|victoria|kate|zoe|emma|sarah|emily|anna|ava|claire|grace/i, score: 85 },
+      
+      // Tier 4: International cool names
+      { pattern: /arthur|pierre|hans|carlos|antonio|giovanni|diego|luis|olivier/i, score: 80 },
+      
+      // Tier 5: Quality indicators
+      { pattern: /compact|hd|high|quality/i, score: 75 },
+      
+      // Tier 6: Avoid robotic/bad voices
+      { pattern: /google|robot|microsoft.*desktop/i, score: -50 }
+    ];
+    
+    let bestVoice = null;
+    let bestScore = -100;
+    
+    voices.forEach(voice => {
+      let score = 0;
+      
+      // Apply pattern scoring
+      voiceRankings.forEach(ranking => {
+        if (ranking.pattern.test(voice.name)) {
+          score += ranking.score;
+        }
+      });
+      
+      // Bonus for non-default voices
+      if (!voice.default) score += 20;
+      
+      // Bonus for English variants
+      if (voice.lang.startsWith('en')) score += 30;
+      if (voice.lang === 'en-US') score += 10;
+      
+      // Track the best voice
+      if (score > bestScore) {
+        bestScore = score;
+        bestVoice = voice;
+      }
+    });
+    
+    console.log(`🎤 Selected voice: ${bestVoice?.name} (${bestVoice?.lang}) - Score: ${bestScore}`);
+    return bestVoice || voices[0];
+  };
 
   const generateParticles = () => {
     const newParticles = Array.from({ length: 5 }, (_, i) => ({
@@ -663,7 +731,21 @@ Keep it under 200 words total. Be specific, not generic.`
               <div className="flex items-center space-x-3">
                 <div className="text-xs text-white/50 flex items-center space-x-1">
                   {voiceEnabled ? <Volume2 className="w-3 h-3" /> : <VolumeX className="w-3 h-3" />}
-                  <span>{voiceEnabled ? 'Alex speaks' : 'Silent mode'}</span>
+                  <span>
+                    {voiceEnabled 
+                      ? `Voice: ${selectedVoice?.name?.split(' ')[0] || 'Default'}` 
+                      : 'Silent mode'
+                    }
+                  </span>
+                  {voiceEnabled && selectedVoice && (
+                    <button 
+                      onClick={testVoice}
+                      className="text-blue-300 hover:text-blue-200 underline ml-1"
+                      title="Test current voice"
+                    >
+                      test
+                    </button>
+                  )}
                 </div>
                 <div className="text-xs text-white/50">
                   {journeyStage.charAt(0).toUpperCase() + journeyStage.slice(1)}
