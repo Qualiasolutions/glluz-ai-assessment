@@ -462,70 +462,70 @@ Maintain executive-level communication. Focus on measurable outcomes and strateg
           <link rel="icon" href="/favicon.ico" />
         </Head>
         
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-8">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4 sm:p-6 lg:p-8">
           <div className="max-w-7xl w-full">
-            <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
+            <div className="bg-white rounded-2xl lg:rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
               {/* Header */}
-              <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-12 py-8">
+              <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-4 sm:px-6 lg:px-12 py-6 lg:py-8">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center">
-                      <BarChart3 className="w-7 h-7 text-blue-600" />
+                  <div className="flex items-center space-x-3 lg:space-x-4">
+                    <div className="w-10 h-10 lg:w-12 lg:h-12 bg-white rounded-xl flex items-center justify-center">
+                      <BarChart3 className="w-5 h-5 lg:w-7 lg:h-7 text-blue-600" />
                     </div>
                     <div>
-                      <h1 className="text-3xl font-bold text-white">Glluz Tech</h1>
-                      <p className="text-blue-100 font-medium">Enterprise AI Consulting</p>
+                      <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">Glluz Tech</h1>
+                      <p className="text-blue-100 font-medium text-sm lg:text-base">Enterprise AI Consulting</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20">
+                  <div className="text-right hidden sm:block">
+                    <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-3 lg:px-4 py-2 border border-white/20">
                       <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                      <span className="text-white text-sm font-medium">Alex Available</span>
+                      <span className="text-white text-xs lg:text-sm font-medium">Alex Available</span>
                     </div>
                   </div>
                 </div>
               </div>
               
               {/* Main Content */}
-              <div className="p-12">
-                <div className="text-center mb-12">
-                  <h2 className="text-4xl font-bold text-slate-800 mb-4">
+              <div className="p-6 sm:p-8 lg:p-12">
+                <div className="text-center mb-8 lg:mb-12">
+                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 mb-4">
                     Strategic AI Implementation Assessment
                   </h2>
-                  <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+                  <p className="text-base sm:text-lg lg:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
                     Meet Alex, your senior AI business consultant. Receive a comprehensive analysis of AI opportunities 
                     tailored to your industry and operational requirements.
                   </p>
                 </div>
                 
                 {/* Feature Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-                  <div className="bg-slate-50 rounded-2xl p-8 border border-slate-200">
-                    <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
-                      <MessageSquare className="w-6 h-6 text-blue-600" />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-8 lg:mb-12">
+                  <div className="bg-slate-50 rounded-xl lg:rounded-2xl p-6 lg:p-8 border border-slate-200">
+                    <div className="w-10 h-10 lg:w-12 lg:h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
+                      <MessageSquare className="w-5 h-5 lg:w-6 lg:h-6 text-blue-600" />
                     </div>
-                    <h3 className="text-xl font-semibold text-slate-800 mb-3">Strategic Discovery</h3>
-                    <p className="text-slate-600 leading-relaxed">
+                    <h3 className="text-lg lg:text-xl font-semibold text-slate-800 mb-3">Strategic Discovery</h3>
+                    <p className="text-slate-600 leading-relaxed text-sm lg:text-base">
                       Comprehensive analysis of your business model, operational challenges, and competitive landscape.
                     </p>
                   </div>
                   
-                  <div className="bg-slate-50 rounded-2xl p-8 border border-slate-200">
-                    <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
-                      <Settings className="w-6 h-6 text-blue-600" />
+                  <div className="bg-slate-50 rounded-xl lg:rounded-2xl p-6 lg:p-8 border border-slate-200">
+                    <div className="w-10 h-10 lg:w-12 lg:h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
+                      <Settings className="w-5 h-5 lg:w-6 lg:h-6 text-blue-600" />
                     </div>
-                    <h3 className="text-xl font-semibold text-slate-800 mb-3">Solution Architecture</h3>
-                    <p className="text-slate-600 leading-relaxed">
+                    <h3 className="text-lg lg:text-xl font-semibold text-slate-800 mb-3">Solution Architecture</h3>
+                    <p className="text-slate-600 leading-relaxed text-sm lg:text-base">
                       Custom AI implementation strategies designed for your specific industry and scale requirements.
                     </p>
                   </div>
                   
-                  <div className="bg-slate-50 rounded-2xl p-8 border border-slate-200">
-                    <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
-                      <BarChart3 className="w-6 h-6 text-blue-600" />
+                  <div className="bg-slate-50 rounded-xl lg:rounded-2xl p-6 lg:p-8 border border-slate-200 md:col-span-2 lg:col-span-1">
+                    <div className="w-10 h-10 lg:w-12 lg:h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
+                      <BarChart3 className="w-5 h-5 lg:w-6 lg:h-6 text-blue-600" />
                     </div>
-                    <h3 className="text-xl font-semibold text-slate-800 mb-3">ROI Assessment</h3>
-                    <p className="text-slate-600 leading-relaxed">
+                    <h3 className="text-lg lg:text-xl font-semibold text-slate-800 mb-3">ROI Assessment</h3>
+                    <p className="text-slate-600 leading-relaxed text-sm lg:text-base">
                       Quantifiable impact analysis with projected returns, implementation timelines, and success metrics.
                     </p>
                   </div>
@@ -535,28 +535,28 @@ Maintain executive-level communication. Focus on measurable outcomes and strateg
                 <div className="text-center">
                   <button
                     onClick={startConversation}
-                    className="inline-flex items-center space-x-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold px-12 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                    className="inline-flex items-center space-x-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold px-8 sm:px-12 py-3 sm:py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 w-full sm:w-auto"
                   >
-                    <User className="w-6 h-6" />
-                    <span className="text-lg">Begin Strategic Assessment</span>
-                    <ChevronRight className="w-5 h-5" />
+                    <User className="w-5 h-5 sm:w-6 sm:h-6" />
+                    <span className="text-base sm:text-lg">Begin Strategic Assessment</span>
+                    <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                   
-                  <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+                  <div className="mt-6 sm:mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 text-xs sm:text-sm">
                     <div className="flex items-center justify-center space-x-2 text-slate-500">
-                      <Clock className="w-4 h-4" />
+                      <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
                       <span>Discovery Phase</span>
                     </div>
                     <div className="flex items-center justify-center space-x-2 text-slate-500">
-                      <Settings className="w-4 h-4" />
+                      <Settings className="w-3 h-3 sm:w-4 sm:h-4" />
                       <span>Solution Design</span>
                     </div>
                     <div className="flex items-center justify-center space-x-2 text-slate-500">
-                      <BarChart3 className="w-4 h-4" />
+                      <BarChart3 className="w-3 h-3 sm:w-4 sm:h-4" />
                       <span>Impact Analysis</span>
                     </div>
                     <div className="flex items-center justify-center space-x-2 text-slate-500">
-                      <User className="w-4 h-4" />
+                      <User className="w-3 h-3 sm:w-4 sm:h-4" />
                       <span>Strategic Roadmap</span>
                     </div>
                   </div>
@@ -564,8 +564,8 @@ Maintain executive-level communication. Focus on measurable outcomes and strateg
               </div>
               
               {/* Footer */}
-              <div className="bg-slate-50 px-12 py-6 border-t border-slate-200">
-                <div className="flex items-center justify-between text-sm text-slate-500">
+              <div className="bg-slate-50 px-4 sm:px-6 lg:px-12 py-4 lg:py-6 border-t border-slate-200">
+                <div className="flex flex-col sm:flex-row items-center justify-between text-xs sm:text-sm text-slate-500 space-y-2 sm:space-y-0">
                   <div>
                     Estimated consultation time: 10-15 minutes
                   </div>
@@ -645,33 +645,33 @@ Maintain executive-level communication. Focus on measurable outcomes and strateg
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex flex-col">
         {/* Professional Header */}
         <div className="bg-white border-b border-slate-200 shadow-sm">
-          <div className="max-w-7xl mx-auto px-8 py-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-6">
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl flex items-center justify-center">
-                    <ThemeIcon className="w-7 h-7 text-white" />
+              <div className="flex items-center space-x-3 sm:space-x-6">
+                <div className="flex items-center space-x-3 sm:space-x-4">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl flex items-center justify-center">
+                    <ThemeIcon className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
                   </div>
                   <div>
-                    <h1 className="text-2xl font-bold text-slate-800">Glluz Tech</h1>
-                    <div className="text-sm text-slate-500 font-medium">Enterprise AI Consulting</div>
+                    <h1 className="text-lg sm:text-2xl font-bold text-slate-800">Glluz Tech</h1>
+                    <div className="text-xs sm:text-sm text-slate-500 font-medium">Enterprise AI Consulting</div>
                   </div>
                 </div>
                 
-                <div className="w-px h-12 bg-slate-200"></div>
+                <div className="w-px h-10 sm:h-12 bg-slate-200 hidden sm:block"></div>
                 
-                <div className="flex items-center space-x-4">
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <div className="flex items-center space-x-2 sm:space-x-4 hidden sm:flex">
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-500 rounded-full"></div>
                   <div>
-                    <div className="text-slate-800 font-semibold">Alex</div>
+                    <div className="text-slate-800 font-semibold text-sm sm:text-base">Alex</div>
                     <div className="text-xs text-slate-500 font-medium">Senior AI Consultant</div>
                   </div>
                 </div>
               </div>
               
               <div className="text-right">
-                <div className="text-slate-800 font-semibold">{getJourneyStageText()}</div>
-                <div className="text-sm text-slate-500">
+                <div className="text-slate-800 font-semibold text-sm sm:text-base">{getJourneyStageText()}</div>
+                <div className="text-xs sm:text-sm text-slate-500">
                   {messages.length} {messages.length === 1 ? 'message' : 'messages'} • Professional Session
                 </div>
               </div>
@@ -681,26 +681,26 @@ Maintain executive-level communication. Focus on measurable outcomes and strateg
 
         {/* Professional Progress Panel */}
         <div className="bg-slate-50 border-b border-slate-200">
-          <div className="max-w-7xl mx-auto px-8 py-4">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
             <div className="flex items-center justify-between">
               {/* Journey Progress */}
-              <div className="flex items-center space-x-4">
-                <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
-                  <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2 sm:space-x-4">
+                <div className="bg-white rounded-xl p-3 sm:p-4 border border-slate-200 shadow-sm">
+                  <div className="flex items-center space-x-2 sm:space-x-3">
                     <div className="relative">
                       {(() => {
                         const phaseInfo = getPhaseInfo();
                         const PhaseIcon = phaseInfo.icon;
-                        return <PhaseIcon className={`w-6 h-6 text-${phaseInfo.color}-600`} />;
+                        return <PhaseIcon className={`w-4 h-4 sm:w-6 sm:h-6 text-${phaseInfo.color}-600`} />;
                       })()}
                     </div>
-                    <div>
+                    <div className="hidden sm:block">
                       <div className="text-slate-800 font-semibold text-sm">{getPhaseInfo().title}</div>
                       <div className="text-xs text-slate-500">{getPhaseInfo().description}</div>
                     </div>
-                    <div className="w-px h-8 bg-slate-200"></div>
+                    <div className="w-px h-6 sm:h-8 bg-slate-200 hidden sm:block"></div>
                     <div className="flex items-center space-x-2">
-                      <div className="w-16 h-2 bg-slate-200 rounded-full overflow-hidden">
+                      <div className="w-12 sm:w-16 h-2 bg-slate-200 rounded-full overflow-hidden">
                         <motion.div 
                           className={`h-full bg-gradient-to-r from-${getPhaseInfo().color}-500 to-${getPhaseInfo().color}-600 rounded-full`}
                           animate={{ width: `${getJourneyProgress()}%` }}
@@ -714,12 +714,12 @@ Maintain executive-level communication. Focus on measurable outcomes and strateg
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2 sm:space-x-3">
                 <button
                   onClick={() => setShowInstructions(!showInstructions)}
-                  className="bg-white hover:bg-slate-50 border border-slate-200 rounded-xl p-3 transition-all duration-300 group shadow-sm"
+                  className="bg-white hover:bg-slate-50 border border-slate-200 rounded-xl p-2 sm:p-3 transition-all duration-300 group shadow-sm"
                 >
-                  <Settings className="w-5 h-5 text-slate-600 group-hover:text-slate-700" />
+                  <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-slate-600 group-hover:text-slate-700" />
                 </button>
               </div>
             </div>
@@ -728,39 +728,39 @@ Maintain executive-level communication. Focus on measurable outcomes and strateg
             <AnimatePresence>
               {showInstructions && (
                 <motion.div
-                  className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4"
+                  className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4"
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.3 }}
                 >
                   {/* Current Phase Tips */}
-                  <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+                  <div className="bg-white rounded-xl p-4 sm:p-6 border border-slate-200 shadow-sm">
                     <div className="flex items-center space-x-3 mb-4">
-                      <Settings className="w-5 h-5 text-blue-600" />
-                      <h3 className="text-slate-800 font-semibold">Phase Guidelines</h3>
+                      <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+                      <h3 className="text-slate-800 font-semibold text-sm sm:text-base">Phase Guidelines</h3>
                     </div>
                     <div className="space-y-2">
                       {getPhaseInfo().tips.map((tip, i) => (
                         <div key={i} className="flex items-start space-x-2">
-                          <ChevronRight className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                          <span className="text-slate-600 text-sm">{tip}</span>
+                          <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                          <span className="text-slate-600 text-xs sm:text-sm">{tip}</span>
                         </div>
                       ))}
                     </div>
                   </div>
 
                   {/* Journey Overview */}
-                  <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+                  <div className="bg-white rounded-xl p-4 sm:p-6 border border-slate-200 shadow-sm">
                     <div className="flex items-center space-x-3 mb-4">
-                      <BarChart3 className="w-5 h-5 text-blue-600" />
-                      <h3 className="text-slate-800 font-semibold">Assessment Flow</h3>
+                      <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+                      <h3 className="text-slate-800 font-semibold text-sm sm:text-base">Assessment Flow</h3>
                     </div>
                     <div className="space-y-3">
                       {['Discovery', 'Exploration', 'Insights', 'Complete'].map((phase, i) => (
                         <div key={i} className="flex items-center space-x-3">
                           <div className={`w-2 h-2 rounded-full ${i <= ['discovery', 'exploration', 'insights', 'completed'].indexOf(journeyStage) ? 'bg-green-500' : 'bg-slate-300'}`} />
-                          <span className={`text-sm ${i <= ['discovery', 'exploration', 'insights', 'completed'].indexOf(journeyStage) ? 'text-slate-800 font-medium' : 'text-slate-500'}`}>
+                          <span className={`text-xs sm:text-sm ${i <= ['discovery', 'exploration', 'insights', 'completed'].indexOf(journeyStage) ? 'text-slate-800 font-medium' : 'text-slate-500'}`}>
                             {phase}
                           </span>
                           <Clock className="w-3 h-3 text-slate-400" />
@@ -776,8 +776,8 @@ Maintain executive-level communication. Focus on measurable outcomes and strateg
         </div>
 
         {/* Professional Messages Container */}
-        <div className="flex-1 overflow-y-auto p-8">
-          <div className="max-w-5xl mx-auto space-y-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+          <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6">
             <AnimatePresence>
               {messages.map((message, index) => (
                 <motion.div
@@ -793,21 +793,21 @@ Maintain executive-level communication. Focus on measurable outcomes and strateg
                   }}
                 >
                   <div 
-                    className={`max-w-4xl rounded-2xl p-6 ${message.sender === 'user'
+                    className={`max-w-full sm:max-w-4xl rounded-xl sm:rounded-2xl p-4 sm:p-6 ${message.sender === 'user'
                         ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg'
                         : 'bg-white border border-slate-200 text-slate-800 shadow-sm'
                     }`}
                   >
                     {message.sender === 'alex' && (
                       <div className="flex items-center space-x-3 mb-4">
-                        <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-blue-700 rounded-full flex items-center justify-center">
-                          <User className="w-4 h-4 text-white" />
+                        <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-blue-600 to-blue-700 rounded-full flex items-center justify-center">
+                          <User className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                         </div>
-                        <div className="flex items-center space-x-4">
-                          <span className="font-semibold text-slate-800">Alex</span>
-                          <span className="text-xs text-slate-500">Senior AI Consultant</span>
+                        <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-4">
+                          <span className="font-semibold text-slate-800 text-sm sm:text-base">Alex</span>
+                          <span className="text-xs text-slate-500 hidden sm:inline">Senior AI Consultant</span>
                           {voiceEnabled && (
-                            <div className="flex items-center space-x-2 bg-green-50 px-3 py-1 rounded-full border border-green-200">
+                            <div className="flex items-center space-x-2 bg-green-50 px-2 sm:px-3 py-1 rounded-full border border-green-200">
                               <Volume2 className="w-3 h-3 text-green-600" />
                               <span className="text-xs text-green-600 font-medium">Audio Enabled</span>
                             </div>
@@ -817,7 +817,7 @@ Maintain executive-level communication. Focus on measurable outcomes and strateg
                     )}
                     
                     <div className="relative">
-                      <p className="leading-relaxed text-base">{message.text}</p>
+                      <p className="leading-relaxed text-sm sm:text-base">{message.text}</p>
                     </div>
                     
                     <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-100">
@@ -825,9 +825,9 @@ Maintain executive-level communication. Focus on measurable outcomes and strateg
                         {message.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                       </div>
                       {message.sender === 'alex' && (
-                        <div className="flex items-center space-x-2 bg-slate-50 px-3 py-1 rounded-full border border-slate-200">
+                        <div className="flex items-center space-x-2 bg-slate-50 px-2 sm:px-3 py-1 rounded-full border border-slate-200">
                           <BarChart3 className="w-3 h-3 text-blue-600" />
-                          <span className="text-xs text-slate-600 font-medium">AI Analysis</span>
+                          <span className="text-xs text-slate-600 font-medium hidden sm:inline">AI Analysis</span>
                         </div>
                       )}
                     </div>
@@ -843,14 +843,14 @@ Maintain executive-level communication. Focus on measurable outcomes and strateg
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
               >
-                <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm max-w-4xl">
+                <div className="bg-white border border-slate-200 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm max-w-full sm:max-w-4xl">
                   <div className="flex items-center space-x-3 mb-4">
-                    <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-blue-700 rounded-full flex items-center justify-center">
-                      <User className="w-4 h-4 text-white" />
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-blue-600 to-blue-700 rounded-full flex items-center justify-center">
+                      <User className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                     </div>
                     <div className="flex items-center space-x-4">
-                      <span className="font-semibold text-slate-800">Alex</span>
-                      <div className="flex items-center space-x-2 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
+                      <span className="font-semibold text-slate-800 text-sm sm:text-base">Alex</span>
+                      <div className="flex items-center space-x-2 bg-blue-50 px-2 sm:px-3 py-1 rounded-full border border-blue-200">
                         <BarChart3 className="w-3 h-3 text-blue-600" />
                         <span className="text-xs text-blue-600 font-medium">Analyzing</span>
                       </div>
@@ -873,7 +873,7 @@ Maintain executive-level communication. Focus on measurable outcomes and strateg
                       animate={{ scale: [1, 1.2, 1] }}
                       transition={{ duration: 0.8, repeat: Infinity, delay: 0.4 }}
                     />
-                    <span className="text-slate-600 ml-3 text-sm">Processing your request...</span>
+                    <span className="text-slate-600 ml-3 text-xs sm:text-sm">Processing your request...</span>
                   </div>
                 </div>
               </motion.div>
@@ -884,8 +884,8 @@ Maintain executive-level communication. Focus on measurable outcomes and strateg
 
         {/* Professional Input Area */}
         <div className="bg-white border-t border-slate-200 shadow-lg">
-          <div className="max-w-7xl mx-auto p-8">
-            <div className="flex items-end space-x-4">
+          <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+            <div className="flex items-end space-x-2 sm:space-x-4">
               <div className="flex-1 relative">
                 <textarea
                   ref={inputRef}
@@ -898,10 +898,10 @@ Maintain executive-level communication. Focus on measurable outcomes and strateg
                     }
                   }}
                   placeholder={`Continue your strategic ${journeyStage} consultation with Alex...`}
-                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-6 py-4 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none transition-all duration-300 text-base"
+                  className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 sm:px-6 py-3 sm:py-4 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none transition-all duration-300 text-sm sm:text-base"
                   rows="1"
                   style={{
-                    minHeight: '60px',
+                    minHeight: '50px',
                     maxHeight: '120px'
                   }}
                   onInput={(e) => {
@@ -909,44 +909,44 @@ Maintain executive-level communication. Focus on measurable outcomes and strateg
                     e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
                   }}
                 />
-                <div className="absolute top-3 right-3 flex items-center space-x-2">
+                <div className="absolute top-2 sm:top-3 right-2 sm:right-3 flex items-center space-x-2">
                   <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <span className="text-xs text-slate-500 font-medium">Professional AI</span>
+                  <span className="text-xs text-slate-500 font-medium hidden sm:inline">Professional AI</span>
                 </div>
               </div>
               
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2 sm:space-x-3">
                 <button
                   onClick={toggleVoice}
-                  className={`p-3 rounded-xl transition-all duration-300 border-2 ${
+                  className={`p-2 sm:p-3 rounded-xl transition-all duration-300 border-2 ${
                     voiceEnabled 
                       ? 'bg-green-500 border-green-400 text-white shadow-lg' 
                       : 'bg-slate-200 border-slate-300 text-slate-500'
                   }`}
                   title={voiceEnabled ? 'Voice enabled - Alex will speak' : 'Voice disabled'}
                 >
-                  {voiceEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+                  {voiceEnabled ? <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" /> : <VolumeX className="w-4 h-4 sm:w-5 sm:h-5" />}
                 </button>
                 
                 <button
                   onClick={handleSendMessage}
                   disabled={!inputMessage.trim() || isLoading}
-                  className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed text-white p-3 rounded-xl transition-all duration-300 shadow-lg border border-blue-500"
+                  className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed text-white p-2 sm:p-3 rounded-xl transition-all duration-300 shadow-lg border border-blue-500"
                 >
-                  <Send className="w-5 h-5" />
+                  <Send className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
               </div>
             </div>
             
-            <div className="flex items-center justify-between mt-6">
-              <div className="flex items-center space-x-4 text-slate-500">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-4 sm:mt-6 space-y-3 sm:space-y-0">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 text-slate-500">
                 <div className="flex items-center space-x-2">
-                  <Settings className="w-4 h-4" />
-                  <span className="text-sm">Press Enter to send • Shift+Enter for new line</span>
+                  <Settings className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="text-xs sm:text-sm">Press Enter to send • Shift+Enter for new line</span>
                 </div>
                 
                 {journeyStage !== 'completed' && (
-                  <div className="flex items-center space-x-2 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
+                  <div className="flex items-center space-x-2 bg-blue-50 px-2 sm:px-3 py-1 rounded-full border border-blue-200">
                     <span className="text-xs text-blue-600 font-medium">
                       {journeyStage === 'discovery' && "Provide specific industry and business details"}
                       {journeyStage === 'exploration' && "Share operational challenges and requirements"}
@@ -955,9 +955,9 @@ Maintain executive-level communication. Focus on measurable outcomes and strateg
                   </div>
                 )}
               </div>
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2 bg-slate-50 px-3 py-2 rounded-full border border-slate-200">
-                  {voiceEnabled ? <Volume2 className="w-4 h-4 text-green-600" /> : <VolumeX className="w-4 h-4 text-slate-400" />}
+              <div className="flex items-center space-x-2 sm:space-x-4">
+                <div className="flex items-center space-x-2 bg-slate-50 px-2 sm:px-3 py-1 sm:py-2 rounded-full border border-slate-200">
+                  {voiceEnabled ? <Volume2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" /> : <VolumeX className="w-3 h-3 sm:w-4 sm:h-4 text-slate-400" />}
                   <span className="text-xs text-slate-600 font-medium">
                     {voiceEnabled 
                       ? `Voice: ${selectedVoice?.name?.split(' ')[0] || 'Default'}` 
@@ -967,14 +967,14 @@ Maintain executive-level communication. Focus on measurable outcomes and strateg
                   {voiceEnabled && selectedVoice && (
                     <button 
                       onClick={testVoice}
-                      className="text-blue-600 hover:text-blue-700 underline ml-2 text-xs font-medium"
+                      className="text-blue-600 hover:text-blue-700 underline ml-2 text-xs font-medium hidden sm:inline"
                       title="Test current voice"
                     >
                       Test
                     </button>
                   )}
                 </div>
-                <div className="flex items-center space-x-2 bg-slate-50 px-3 py-2 rounded-full border border-slate-200">
+                <div className="flex items-center space-x-2 bg-slate-50 px-2 sm:px-3 py-1 sm:py-2 rounded-full border border-slate-200">
                   <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                   <span className="text-xs text-slate-600 font-medium">
                     {journeyStage.charAt(0).toUpperCase() + journeyStage.slice(1)} Phase
