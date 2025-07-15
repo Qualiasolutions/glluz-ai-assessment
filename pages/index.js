@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Head from 'next/head';
-import { Send, Mic, MicOff, Volume2, VolumeX, Sparkles, Zap, Brain, Rocket } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Send, Mic, MicOff, Volume2, VolumeX, Sparkles, Zap, Brain, Rocket, Star, Layers, Cpu } from 'lucide-react';
 
 export default function Home() {
   const [messages, setMessages] = useState([]);
@@ -16,12 +17,47 @@ export default function Home() {
   const [showVoiceSelector, setShowVoiceSelector] = useState(false);
   const [journeyStage, setJourneyStage] = useState('intro'); // intro, discovery, exploration, insights, completed
   const [particles, setParticles] = useState([]);
+  const [audioWaveform, setAudioWaveform] = useState(Array(32).fill(0));
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
-  const backgroundRef = useRef(null);
+  const audioContextRef = useRef(null);
+  const analyzerRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const initializeAudioVisualization = () => {
+    if (!audioContextRef.current && window.AudioContext) {
+      audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+      analyzerRef.current = audioContextRef.current.createAnalyser();
+      analyzerRef.current.fftSize = 64;
+      
+      // Create oscillator for simulated audio visualization during speech
+      const oscillator = audioContextRef.current.createOscillator();
+      oscillator.connect(analyzerRef.current);
+      analyzerRef.current.connect(audioContextRef.current.destination);
+      
+      // Start audio visualization animation
+      const animateWaveform = () => {
+        if (isSpeaking) {
+          const dataArray = new Uint8Array(analyzerRef.current.frequencyBinCount);
+          // Simulate speech waveform with random values during speaking
+          const simulatedData = Array(32).fill(0).map(() => 
+            Math.random() * 100 + (Math.sin(Date.now() * 0.01) * 50 + 50)
+          );
+          setAudioWaveform(simulatedData);
+        } else {
+          // Gentle ambient waveform when not speaking
+          const ambientData = Array(32).fill(0).map((_, i) => 
+            Math.sin(Date.now() * 0.001 + i * 0.5) * 10 + 15
+          );
+          setAudioWaveform(ambientData);
+        }
+        requestAnimationFrame(animateWaveform);
+      };
+      animateWaveform();
+    }
   };
 
   const speakText = (text) => {
@@ -29,6 +65,9 @@ export default function Home() {
     
     // Stop any current speech
     window.speechSynthesis.cancel();
+    
+    // Initialize audio visualization
+    initializeAudioVisualization();
     
     // Clean text for speech (remove markdown and emojis)
     const cleanText = text
@@ -108,6 +147,11 @@ export default function Home() {
       window.speechSynthesis.onvoiceschanged = loadVoices;
     }
   }, [selectedVoice]);
+
+  useEffect(() => {
+    // Initialize audio visualization once on mount
+    initializeAudioVisualization();
+  }, []);
 
   const findBestVoice = (voices) => {
     console.log('🎤 Available voices:', voices.map(v => `${v.name} (${v.lang})`));
@@ -485,50 +529,154 @@ Keep it under 200 words total. Be specific, not generic.`
           <link rel="icon" href="/favicon.ico" />
         </Head>
         
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center p-4">
-          <div className="max-w-2xl w-full text-center">
-            <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-12 border border-white/20 shadow-2xl">
-              <div className="mb-8">
-                <h1 className="text-4xl font-bold text-white mb-4">
-                  Glluz Tech
-                </h1>
-                <div className="w-20 h-1 bg-gradient-to-r from-blue-400 to-purple-400 mx-auto rounded-full mb-8"></div>
-                <h2 className="text-2xl font-semibold text-white mb-4">
+        <div className="min-h-screen bg-gradient-to-br from-gray-950 via-slate-900 to-gray-950 flex items-center justify-center p-4 relative overflow-hidden">
+          {/* Premium floating elements */}
+          <div className="absolute inset-0 overflow-hidden">
+            {[...Array(12)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-2 h-2 bg-blue-400/20 rounded-full"
+                animate={{
+                  x: [Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200), Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200)],
+                  y: [Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800), Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800)],
+                  scale: [0.5, 1.5, 0.5],
+                  opacity: [0.2, 0.8, 0.2]
+                }}
+                transition={{
+                  duration: 20 + Math.random() * 20,
+                  repeat: Infinity,
+                  ease: "linear",
+                  delay: i * 2
+                }}
+                style={{
+                  left: Math.random() * 100 + '%',
+                  top: Math.random() * 100 + '%'
+                }}
+              />
+            ))}
+          </div>
+          
+          {/* Geometric background patterns */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-20 left-20 w-32 h-32 border border-blue-400/30 rounded-full animate-pulse" style={{animationDuration: '8s'}}></div>
+            <div className="absolute bottom-32 right-32 w-24 h-24 border-2 border-purple-400/30 rotate-45 animate-spin" style={{animationDuration: '12s'}}></div>
+            <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-lg animate-bounce" style={{animationDuration: '6s'}}></div>
+          </div>
+          
+          <motion.div 
+            className="max-w-3xl w-full text-center relative z-10"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+          >
+            <motion.div 
+              className="bg-white/5 backdrop-blur-2xl rounded-[2rem] p-16 border border-white/10 shadow-[0_32px_64px_rgba(0,0,0,0.4)] relative overflow-hidden"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.3 }}
+            >
+              {/* Premium glow effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-blue-500/5 opacity-60"></div>
+              <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full blur-3xl"></div>
+              <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-full blur-3xl"></div>
+              <div className="mb-12 relative z-10">
+                <motion.div
+                  className="flex items-center justify-center mb-8"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  <Cpu className="w-12 h-12 text-blue-400 mr-4 animate-pulse" />
+                  <h1 className="text-6xl font-black text-white tracking-tight bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
+                    Glluz Tech
+                  </h1>
+                </motion.div>
+                
+                <motion.div 
+                  className="flex items-center justify-center mb-8"
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ delay: 0.8, duration: 0.8 }}
+                >
+                  <div className="w-32 h-1 bg-gradient-to-r from-transparent via-blue-400 to-transparent rounded-full shadow-lg shadow-blue-400/50"></div>
+                  <Star className="w-4 h-4 text-blue-400 mx-4 animate-spin" style={{animationDuration: '4s'}} />
+                  <div className="w-32 h-1 bg-gradient-to-r from-transparent via-purple-400 to-transparent rounded-full shadow-lg shadow-purple-400/50"></div>
+                </motion.div>
+                
+                <motion.h2 
+                  className="text-3xl font-bold text-white mb-6 tracking-wide"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1 }}
+                >
                   AI Discovery Platform
-                </h2>
-                <p className="text-xl text-blue-100 mb-8 leading-relaxed">
-                  Meet Alex, your personal AI consultant. Together, we'll explore how artificial intelligence can transform your business and unlock new possibilities you never imagined.
-                </p>
+                </motion.h2>
+                
+                <motion.p 
+                  className="text-xl text-gray-200 mb-8 leading-relaxed max-w-2xl mx-auto font-light"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.2 }}
+                >
+                  Meet <span className="font-semibold text-blue-300">Alex</span>, your personal AI consultant. Experience premium-grade artificial intelligence as we explore transformative solutions tailored specifically for your business vision.
+                </motion.p>
               </div>
               
-              <div className="space-y-6 mb-10">
-                <div className="flex items-center justify-center space-x-4 text-blue-100">
-                  <div className="w-3 h-3 bg-blue-400 rounded-full animate-pulse"></div>
-                  <span>Natural conversation, not a questionnaire</span>
-                </div>
-                <div className="flex items-center justify-center space-x-4 text-blue-100">
-                  <div className="w-3 h-3 bg-purple-400 rounded-full animate-pulse delay-300"></div>
-                  <span>Discover personalized AI solutions</span>
-                </div>
-                <div className="flex items-center justify-center space-x-4 text-blue-100">
-                  <div className="w-3 h-3 bg-blue-400 rounded-full animate-pulse delay-600"></div>
-                  <span>Professional insights and recommendations</span>
-                </div>
-              </div>
+              <motion.div 
+                className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 relative z-10"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.4, staggerChildren: 0.2 }}
+              >
+                {[
+                  { icon: Brain, text: "Neural conversation flow", color: "blue" },
+                  { icon: Layers, text: "Premium AI architecture", color: "purple" },
+                  { icon: Zap, text: "Professional-grade insights", color: "cyan" }
+                ].map((item, i) => (
+                  <motion.div
+                    key={i}
+                    className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:border-white/20 transition-all duration-300 group"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.6 + i * 0.2 }}
+                    whileHover={{ scale: 1.05, y: -5 }}
+                  >
+                    <item.icon className={`w-8 h-8 text-${item.color}-400 mx-auto mb-3 group-hover:animate-pulse`} />
+                    <p className="text-gray-200 text-sm font-medium text-center leading-relaxed">
+                      {item.text}
+                    </p>
+                  </motion.div>
+                ))}
+              </motion.div>
 
-              <button
+              <motion.button
                 onClick={startConversation}
-                className={`bg-gradient-to-r ${theme.accent} hover:shadow-2xl text-white font-bold py-5 px-16 rounded-2xl transition-all duration-500 transform hover:scale-110 shadow-xl text-xl relative overflow-hidden group`}
+                className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 hover:from-blue-500 hover:via-purple-500 hover:to-blue-500 text-white font-bold py-6 px-20 rounded-2xl transition-all duration-500 shadow-[0_16px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_40px_rgba(59,130,246,0.4)] text-xl relative overflow-hidden group border border-white/20"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 2 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
               >
                 <span className="relative z-10 flex items-center justify-center">
-                  <Rocket className="w-6 h-6 mr-3 animate-bounce" />
-                  Begin Your AI Adventure
-                  <Sparkles className="w-6 h-6 ml-3 animate-spin" style={{animationDuration: '3s'}} />
+                  <motion.div
+                    animate={{ rotate: [0, 360] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                  >
+                    <Rocket className="w-7 h-7 mr-4" />
+                  </motion.div>
+                  Begin Premium AI Experience
+                  <motion.div
+                    animate={{ rotate: [0, 360] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                  >
+                    <Sparkles className="w-7 h-7 ml-4" />
+                  </motion.div>
                 </span>
-                <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-              </button>
-            </div>
-          </div>
+                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              </motion.button>
+            </motion.div>
+          </motion.div>
         </div>
       </>
     );
@@ -553,130 +701,292 @@ Keep it under 200 words total. Be specific, not generic.`
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className={`min-h-screen bg-gradient-to-br ${theme.gradient} flex flex-col relative overflow-hidden transition-all duration-1000`}>
-        {/* Dynamic Background Elements */}
+      <div className={`min-h-screen bg-gradient-to-br from-gray-950 via-slate-900 to-gray-950 flex flex-col relative overflow-hidden transition-all duration-1000`}>
+        {/* Premium Dynamic Background */}
         <div className="absolute inset-0 overflow-hidden">
+          {/* Neural network pattern */}
+          <div className="absolute inset-0 opacity-5">
+            <svg className="w-full h-full" viewBox="0 0 1200 800">
+              <defs>
+                <pattern id="neural-grid" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+                  <circle cx="50" cy="50" r="1" fill="currentColor" opacity="0.3" />
+                  <line x1="50" y1="50" x2="150" y2="50" stroke="currentColor" strokeWidth="0.5" opacity="0.2" />
+                  <line x1="50" y1="50" x2="50" y2="150" stroke="currentColor" strokeWidth="0.5" opacity="0.2" />
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#neural-grid)" className="text-blue-400" />
+            </svg>
+          </div>
+          
+          {/* Floating particles with motion */}
           {particles.map((particle) => (
-            <div
+            <motion.div
               key={particle.id}
-              className="absolute rounded-full bg-white/10 animate-pulse"
+              className="absolute rounded-full bg-gradient-to-r from-blue-400/20 to-purple-400/20 shadow-lg"
               style={{
                 left: `${particle.x}%`,
                 top: `${particle.y}%`,
                 width: `${particle.size}px`,
                 height: `${particle.size}px`,
-                animationDuration: `${particle.duration}s`,
-                animationDelay: `${particle.delay}s`
+              }}
+              animate={{
+                scale: [0.5, 1.2, 0.5],
+                opacity: [0.2, 0.8, 0.2],
+                rotate: [0, 180, 360]
+              }}
+              transition={{
+                duration: particle.duration,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: particle.delay
               }}
             />
           ))}
         </div>
         
-        {/* Floating Background Shapes */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-10 left-10 w-20 h-20 border border-white/5 rounded-full animate-spin" style={{animationDuration: '15s'}}></div>
-          <div className="absolute bottom-20 right-20 w-16 h-16 bg-white/5 rounded-lg animate-bounce" style={{animationDuration: '4s'}}></div>
-          <div className="absolute top-1/3 right-10 w-12 h-12 border-2 border-white/10 rotate-45 animate-pulse"></div>
+        {/* Premium geometric elements */}
+        <div className="absolute inset-0 pointer-events-none opacity-10">
+          <motion.div 
+            className="absolute top-20 left-20 w-32 h-32 border-2 border-blue-400/30 rounded-full"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          />
+          <motion.div 
+            className="absolute bottom-32 right-32 w-24 h-24 border-2 border-purple-400/30"
+            animate={{ rotate: -360, scale: [1, 1.2, 1] }}
+            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+            style={{ clipPath: "polygon(50% 0%, 0% 100%, 100% 100%)" }}
+          />
+          <motion.div 
+            className="absolute top-1/2 left-1/4 w-16 h-16 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-lg"
+            animate={{ y: [-20, 20, -20] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          />
         </div>
-        {/* Enhanced Header */}
-        <div className="bg-white/10 backdrop-blur-xl border-b border-white/30 p-4 relative z-10">
-          <div className="max-w-4xl mx-auto flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-3">
-                <ThemeIcon className="w-8 h-8 text-white/80 animate-pulse" />
-                <h1 className="text-2xl font-bold text-white">Glluz Tech</h1>
-              </div>
-              <div className="w-px h-8 bg-white/30"></div>
-              <div className="flex items-center space-x-3">
-                <div className={`w-4 h-4 bg-gradient-to-r ${theme.accent} rounded-full animate-pulse shadow-lg`}></div>
-                <div className="flex flex-col">
-                  <span className="text-white font-medium">Alex - AI Consultant</span>
-                  <span className="text-xs text-blue-200">Ready to explore together</span>
+        {/* Premium Header */}
+        <motion.div 
+          className="bg-gray-900/20 backdrop-blur-2xl border-b border-white/10 relative z-10"
+          initial={{ y: -100 }}
+          animate={{ y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          {/* Header glow effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-blue-500/5"></div>
+          
+          <div className="max-w-6xl mx-auto p-6">
+            <div className="flex items-center justify-between">
+              <motion.div 
+                className="flex items-center space-x-6"
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                <div className="flex items-center space-x-4">
+                  <div className="relative">
+                    <ThemeIcon className="w-10 h-10 text-blue-400 relative z-10" />
+                    <div className="absolute inset-0 bg-blue-400/20 rounded-full blur-lg animate-pulse"></div>
+                  </div>
+                  <div>
+                    <h1 className="text-2xl font-black text-white tracking-tight">Glluz Tech</h1>
+                    <div className="w-16 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full"></div>
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-sm font-medium text-white">{getJourneyStageText()}</div>
-              <div className="text-xs text-blue-200">{messages.length} messages exchanged</div>
+                
+                <div className="w-px h-12 bg-gradient-to-b from-transparent via-white/30 to-transparent"></div>
+                
+                <div className="flex items-center space-x-4">
+                  <div className="relative">
+                    <div className="w-4 h-4 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full shadow-lg shadow-green-400/50">
+                      <div className="absolute inset-0 bg-green-400 rounded-full animate-ping opacity-30"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-white font-bold text-lg">Alex</div>
+                    <div className="text-xs text-gray-300 font-medium">AI Consultant • Online</div>
+                  </div>
+                </div>
+              </motion.div>
+              
+              <motion.div 
+                className="text-right"
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5 }}
+              >
+                <div className="text-white font-bold text-lg">{getJourneyStageText()}</div>
+                <div className="text-sm text-gray-300">
+                  {messages.length} {messages.length === 1 ? 'message' : 'messages'} • Premium Experience
+                </div>
+              </motion.div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Enhanced Messages Container */}
-        <div className="flex-1 overflow-y-auto p-4 relative z-10">
-          <div className="max-w-4xl mx-auto space-y-6">
-            {messages.map((message, index) => (
-              <div
-                key={message.id}
-                className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-4 duration-500`}
-                style={{animationDelay: `${index * 100}ms`}}
-              >
-                <div className={`max-w-3xl rounded-3xl p-6 transform hover:scale-105 transition-all duration-300 ${
-                  message.sender === 'user'
-                    ? `bg-gradient-to-r ${theme.accent} text-white shadow-xl border border-white/20`
-                    : 'bg-white/10 backdrop-blur-xl border border-white/30 text-white shadow-2xl'
-                } ${message.type === 'story' ? 'border-2 border-yellow-400/30 bg-gradient-to-r from-white/15 to-white/5' : ''}`}>
-                  {message.sender === 'alex' && (
-                    <div className="flex items-center space-x-3 mb-3">
-                      <div className={`w-3 h-3 bg-gradient-to-r ${theme.accent} rounded-full animate-pulse shadow-lg`}></div>
-                      <span className="text-sm font-semibold text-white">Alex</span>
-                      {voiceEnabled && (
-                        <div className="flex items-center space-x-1">
-                          <Volume2 className="w-3 h-3 text-green-400" />
-                          <span className="text-xs text-green-300 font-medium">Speaking</span>
-                        </div>
-                      )}
-                      {message.type === 'story' && (
-                        <div className="flex items-center space-x-1">
-                          <Sparkles className="w-4 h-4 text-yellow-400 animate-pulse" />
-                          <span className="text-xs text-yellow-300 font-medium">Story Mode</span>
-                        </div>
+        {/* Premium Messages Container */}
+        <div className="flex-1 overflow-y-auto p-6 relative z-10">
+          <div className="max-w-5xl mx-auto space-y-8">
+            <AnimatePresence>
+              {messages.map((message, index) => (
+                <motion.div
+                  key={message.id}
+                  className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                  initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -50, scale: 0.9 }}
+                  transition={{ 
+                    duration: 0.5, 
+                    delay: index * 0.1,
+                    ease: "easeOut"
+                  }}
+                >
+                  <motion.div 
+                    className={`max-w-4xl rounded-[2rem] p-8 relative group ${
+                      message.sender === 'user'
+                        ? 'bg-gradient-to-br from-blue-600 via-purple-600 to-blue-600 text-white shadow-[0_20px_40px_rgba(59,130,246,0.3)] border border-white/20'
+                        : 'bg-gray-900/30 backdrop-blur-2xl border border-white/10 text-white shadow-[0_20px_40px_rgba(0,0,0,0.3)]'
+                    } ${message.type === 'story' ? 'border-2 border-yellow-400/40 bg-gradient-to-br from-yellow-900/20 to-orange-900/20' : ''}`}
+                    whileHover={{ scale: 1.02, y: -5 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {/* Message glow effect */}
+                    <div className="absolute inset-0 rounded-[2rem] opacity-50">
+                      {message.sender === 'user' ? (
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-[2rem]"></div>
+                      ) : (
+                        <div className="absolute inset-0 bg-gradient-to-r from-gray-500/5 to-blue-500/5 rounded-[2rem]"></div>
                       )}
                     </div>
-                  )}
-                  <p className="leading-relaxed text-lg">{message.text}</p>
-                  <div className="flex items-center justify-between mt-4">
-                    <div className="text-xs text-white/70">
-                      {message.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                    </div>
+                    
                     {message.sender === 'alex' && (
-                      <div className="flex items-center space-x-1">
-                        <Brain className="w-3 h-3 text-white/50" />
-                        <span className="text-xs text-white/50">AI Generated</span>
-                      </div>
+                      <motion.div 
+                        className="flex items-center space-x-4 mb-6"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.3 }}
+                      >
+                        <div className="relative">
+                          <div className="w-4 h-4 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full shadow-lg shadow-green-400/50">
+                            <div className="absolute inset-0 bg-green-400 rounded-full animate-ping opacity-30"></div>
+                          </div>
+                        </div>
+                        <span className="text-lg font-bold text-white">Alex</span>
+                        {voiceEnabled && (
+                          <div className="flex items-center space-x-3 bg-green-500/20 px-4 py-2 rounded-full border border-green-400/30">
+                            <Volume2 className="w-4 h-4 text-green-400" />
+                            <span className="text-xs text-green-300 font-medium">Audio</span>
+                            {isSpeaking && (
+                              <div className="flex items-center space-x-1">
+                                {audioWaveform.slice(0, 8).map((height, i) => (
+                                  <motion.div
+                                    key={i}
+                                    className="bg-green-400 rounded-full"
+                                    style={{ width: '2px' }}
+                                    animate={{ height: Math.max(height / 8, 2) }}
+                                    transition={{ duration: 0.1 }}
+                                  />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        {message.type === 'story' && (
+                          <div className="flex items-center space-x-2 bg-yellow-500/20 px-3 py-1 rounded-full border border-yellow-400/30">
+                            <Sparkles className="w-4 h-4 text-yellow-400 animate-pulse" />
+                            <span className="text-xs text-yellow-300 font-medium">Enhanced Mode</span>
+                          </div>
+                        )}
+                      </motion.div>
                     )}
-                  </div>
-                </div>
-              </div>
-            ))}
+                    
+                    <div className="relative z-10">
+                      <p className="leading-relaxed text-lg font-medium">{message.text}</p>
+                    </div>
+                    
+                    <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/10">
+                      <div className="text-sm text-white/60 font-medium">
+                        {message.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                      </div>
+                      {message.sender === 'alex' && (
+                        <div className="flex items-center space-x-2 bg-white/5 px-3 py-1 rounded-full border border-white/10">
+                          <Brain className="w-4 h-4 text-blue-400" />
+                          <span className="text-xs text-white/60 font-medium">AI Response</span>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
             
             {isLoading && (
-              <div className="flex justify-start animate-in slide-in-from-left-4 duration-500">
-                <div className="bg-white/15 backdrop-blur-xl border border-white/30 rounded-3xl p-6 shadow-2xl">
-                  <div className="flex items-center space-x-3 mb-4">
-                    <div className={`w-3 h-3 bg-gradient-to-r ${theme.accent} rounded-full animate-pulse shadow-lg`}></div>
-                    <span className="text-sm font-semibold text-white">Alex</span>
-                    <Brain className="w-4 h-4 text-white/70 animate-pulse" />
+              <motion.div
+                className="flex justify-start"
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+              >
+                <div className="bg-gray-900/40 backdrop-blur-2xl border border-white/20 rounded-[2rem] p-8 shadow-[0_20px_40px_rgba(0,0,0,0.4)] relative">
+                  {/* Loading glow effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-[2rem]"></div>
+                  
+                  <div className="flex items-center space-x-4 mb-6 relative z-10">
+                    <div className="relative">
+                      <div className="w-4 h-4 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full shadow-lg shadow-blue-400/50">
+                        <div className="absolute inset-0 bg-blue-400 rounded-full animate-ping opacity-30"></div>
+                      </div>
+                    </div>
+                    <span className="text-lg font-bold text-white">Alex</span>
+                    <div className="flex items-center space-x-2 bg-blue-500/20 px-3 py-1 rounded-full border border-blue-400/30">
+                      <Brain className="w-4 h-4 text-blue-400 animate-pulse" />
+                      <span className="text-xs text-blue-300 font-medium">Processing</span>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-3 h-3 bg-gradient-to-r ${theme.accent} rounded-full animate-bounce shadow-lg`}></div>
-                    <div className={`w-3 h-3 bg-gradient-to-r ${theme.accent} rounded-full animate-bounce delay-100 shadow-lg`}></div>
-                    <div className={`w-3 h-3 bg-gradient-to-r ${theme.accent} rounded-full animate-bounce delay-200 shadow-lg`}></div>
-                    <span className="text-white/70 ml-3 text-sm">Crafting your journey...</span>
+                  
+                  <div className="flex items-center space-x-3 relative z-10">
+                    <motion.div 
+                      className="w-4 h-4 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full shadow-lg"
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 0.8, repeat: Infinity, delay: 0 }}
+                    />
+                    <motion.div 
+                      className="w-4 h-4 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full shadow-lg"
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 0.8, repeat: Infinity, delay: 0.2 }}
+                    />
+                    <motion.div 
+                      className="w-4 h-4 bg-gradient-to-r from-pink-400 to-blue-400 rounded-full shadow-lg"
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 0.8, repeat: Infinity, delay: 0.4 }}
+                    />
+                    <motion.span 
+                      className="text-white/80 ml-4 text-lg font-medium"
+                      animate={{ opacity: [0.5, 1, 0.5] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      Analyzing and crafting response...
+                    </motion.span>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             )}
             <div ref={messagesEndRef} />
           </div>
         </div>
 
-        {/* Enhanced Input Area */}
-        <div className="bg-white/10 backdrop-blur-xl border-t border-white/30 p-6 relative z-10">
-          <div className="max-w-4xl mx-auto">
-            <div className="flex items-end space-x-4">
+        {/* Premium Input Area */}
+        <motion.div 
+          className="bg-gray-900/20 backdrop-blur-2xl border-t border-white/10 relative z-10"
+          initial={{ y: 100 }}
+          animate={{ y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          {/* Input area glow effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-blue-500/5"></div>
+          
+          <div className="max-w-5xl mx-auto p-8">
+            <div className="flex items-end space-x-6">
               <div className="flex-1 relative">
-                <textarea
+                <motion.textarea
                   ref={inputRef}
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
@@ -686,74 +996,119 @@ Keep it under 200 words total. Be specific, not generic.`
                       handleSendMessage();
                     }
                   }}
-                  placeholder={`Continue your ${journeyStage} journey with Alex...`}
-                  className={`w-full bg-white/15 border-2 border-white/30 rounded-2xl px-6 py-4 text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-white/50 resize-none backdrop-blur-xl transition-all duration-300 text-lg`}
+                  placeholder={`Continue your premium ${journeyStage} experience with Alex...`}
+                  className="w-full bg-gray-900/30 border-2 border-white/20 rounded-2xl px-8 py-6 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50 resize-none backdrop-blur-xl transition-all duration-300 text-lg font-medium shadow-[0_8px_32px_rgba(0,0,0,0.3)]"
                   rows="1"
                   style={{
-                    minHeight: '60px',
-                    maxHeight: '140px'
+                    minHeight: '80px',
+                    maxHeight: '160px'
                   }}
                   onInput={(e) => {
                     e.target.style.height = 'auto';
-                    e.target.style.height = Math.min(e.target.scrollHeight, 140) + 'px';
+                    e.target.style.height = Math.min(e.target.scrollHeight, 160) + 'px';
                   }}
+                  whileFocus={{ scale: 1.02 }}
+                  transition={{ duration: 0.2 }}
                 />
-                <div className={`absolute top-2 right-2 w-2 h-2 bg-gradient-to-r ${theme.accent} rounded-full animate-pulse`}></div>
+                {/* Input indicator */}
+                <div className="absolute top-4 right-4 flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full animate-pulse shadow-lg shadow-blue-400/50"></div>
+                  <span className="text-xs text-gray-400 font-medium">Premium AI</span>
+                </div>
               </div>
               
-              <button
-                onClick={toggleVoice}
-                className={`p-4 rounded-2xl transition-all duration-300 transform hover:scale-110 ${
-                  voiceEnabled 
-                    ? 'bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg shadow-green-500/30' 
-                    : 'bg-gradient-to-r from-red-500 to-pink-600 shadow-lg shadow-red-500/30'
-                } ${isSpeaking ? 'animate-pulse' : ''}`}
-                title={voiceEnabled ? 'Voice enabled - Alex will speak' : 'Voice disabled'}
-              >
-                {voiceEnabled ? <Volume2 className="w-6 h-6 text-white" /> : <VolumeX className="w-6 h-6 text-white" />}
-              </button>
+              <div className="flex flex-col items-center space-y-3">
+                <motion.button
+                  onClick={toggleVoice}
+                  className={`p-5 rounded-2xl transition-all duration-300 border-2 relative ${
+                    voiceEnabled 
+                      ? 'bg-gradient-to-r from-green-500 to-emerald-600 border-green-400/50 shadow-[0_8px_32px_rgba(34,197,94,0.3)]' 
+                      : 'bg-gradient-to-r from-red-500 to-pink-600 border-red-400/50 shadow-[0_8px_32px_rgba(239,68,68,0.3)]'
+                  } ${isSpeaking ? 'animate-pulse scale-110' : ''}`}
+                  title={voiceEnabled ? 'Voice enabled - Alex will speak' : 'Voice disabled'}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {voiceEnabled ? <Volume2 className="w-7 h-7 text-white" /> : <VolumeX className="w-7 h-7 text-white" />}
+                </motion.button>
+                
+                {/* Real-time Audio Visualization */}
+                {voiceEnabled && (
+                  <div className="flex items-end space-x-1 h-8">
+                    {audioWaveform.map((height, i) => (
+                      <motion.div
+                        key={i}
+                        className={`bg-gradient-to-t rounded-full ${
+                          isSpeaking 
+                            ? 'from-green-400 to-emerald-300' 
+                            : 'from-blue-400/50 to-purple-400/50'
+                        }`}
+                        style={{ width: '3px' }}
+                        animate={{ 
+                          height: Math.max(height / 4, 4),
+                          opacity: isSpeaking ? 1 : 0.6 
+                        }}
+                        transition={{ 
+                          duration: 0.1,
+                          ease: "easeOut"
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
               
-              <button
+              <motion.button
                 onClick={handleSendMessage}
                 disabled={!inputMessage.trim() || isLoading}
-                className={`bg-gradient-to-r ${theme.accent} hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed text-white p-4 rounded-2xl transition-all duration-300 transform hover:scale-110 disabled:hover:scale-100 shadow-xl relative overflow-hidden group`}
+                className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 hover:from-blue-500 hover:via-purple-500 hover:to-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white p-5 rounded-2xl transition-all duration-300 shadow-[0_8px_32px_rgba(59,130,246,0.3)] border-2 border-blue-400/50 relative overflow-hidden group"
+                whileHover={{ scale: !inputMessage.trim() || isLoading ? 1 : 1.1 }}
+                whileTap={{ scale: !inputMessage.trim() || isLoading ? 1 : 0.95 }}
               >
-                <Send className="w-6 h-6 relative z-10" />
-                <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-500"></div>
-              </button>
+                <Send className="w-7 h-7 relative z-10" />
+                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+              </motion.button>
             </div>
             
-            <div className="flex items-center justify-between mt-4">
-              <div className="text-sm text-blue-200 flex items-center space-x-2">
-                <Zap className="w-4 h-4" />
-                <span>Press Enter to continue your journey</span>
+            <motion.div 
+              className="flex items-center justify-between mt-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              <div className="flex items-center space-x-3 text-gray-300">
+                <Zap className="w-5 h-5 text-blue-400" />
+                <span className="text-sm font-medium">Press Enter to send • Shift+Enter for new line</span>
               </div>
-              <div className="flex items-center space-x-3">
-                <div className="text-xs text-white/50 flex items-center space-x-1">
-                  {voiceEnabled ? <Volume2 className="w-3 h-3" /> : <VolumeX className="w-3 h-3" />}
-                  <span>
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2 bg-white/5 px-4 py-2 rounded-full border border-white/10">
+                  {voiceEnabled ? <Volume2 className="w-4 h-4 text-green-400" /> : <VolumeX className="w-4 h-4 text-red-400" />}
+                  <span className="text-xs text-gray-300 font-medium">
                     {voiceEnabled 
                       ? `Voice: ${selectedVoice?.name?.split(' ')[0] || 'Default'}` 
-                      : 'Silent mode'
+                      : 'Silent Mode'
                     }
                   </span>
                   {voiceEnabled && selectedVoice && (
                     <button 
                       onClick={testVoice}
-                      className="text-blue-300 hover:text-blue-200 underline ml-1"
+                      className="text-blue-400 hover:text-blue-300 underline ml-2 text-xs font-medium"
                       title="Test current voice"
                     >
-                      test
+                      Test
                     </button>
                   )}
                 </div>
-                <div className="text-xs text-white/50">
-                  {journeyStage.charAt(0).toUpperCase() + journeyStage.slice(1)}
+                <div className="flex items-center space-x-2 bg-white/5 px-4 py-2 rounded-full border border-white/10">
+                  <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full animate-pulse"></div>
+                  <span className="text-xs text-gray-300 font-medium">
+                    {journeyStage.charAt(0).toUpperCase() + journeyStage.slice(1)} Mode
+                  </span>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </>
   );
