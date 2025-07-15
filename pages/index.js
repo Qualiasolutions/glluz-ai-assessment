@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Head from 'next/head';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Mic, MicOff, Volume2, VolumeX, Sparkles, Zap, Brain, Rocket, Star, Layers, Cpu } from 'lucide-react';
+import { Send, Mic, MicOff, Volume2, VolumeX, Sparkles, Zap, Brain, Rocket, Star, Layers, Cpu, Info, Target, MapPin, Trophy, Command, HelpCircle, ChevronRight, Clock } from 'lucide-react';
 
 export default function Home() {
   const [messages, setMessages] = useState([]);
@@ -18,6 +18,8 @@ export default function Home() {
   const [journeyStage, setJourneyStage] = useState('intro'); // intro, discovery, exploration, insights, completed
   const [particles, setParticles] = useState([]);
   const [audioWaveform, setAudioWaveform] = useState(Array(32).fill(0));
+  const [showInstructions, setShowInstructions] = useState(false);
+  const [showCommands, setShowCommands] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const audioContextRef = useRef(null);
@@ -675,6 +677,45 @@ Keep it under 200 words total. Be specific, not generic.`
                 <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               </motion.button>
+              
+              {/* Welcome Instructions */}
+              <motion.div 
+                className="mt-8 bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 text-left"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 2.5 }}
+              >
+                <div className="flex items-center space-x-3 mb-4">
+                  <Info className="w-5 h-5 text-blue-400" />
+                  <h3 className="text-white font-bold">What to Expect</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+                  <div className="flex items-center space-x-2">
+                    <Target className="w-4 h-4 text-blue-400" />
+                    <span className="text-gray-300">Discovery (2-3 min)</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <MapPin className="w-4 h-4 text-purple-400" />
+                    <span className="text-gray-300">Exploration (3-4 min)</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Brain className="w-4 h-4 text-cyan-400" />
+                    <span className="text-gray-300">Insights (2-3 min)</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Trophy className="w-4 h-4 text-green-400" />
+                    <span className="text-gray-300">AI Roadmap</span>
+                  </div>
+                </div>
+                <div className="mt-4 p-3 bg-yellow-500/10 rounded-xl border border-yellow-400/20">
+                  <div className="flex items-center space-x-2">
+                    <Sparkles className="w-4 h-4 text-yellow-400" />
+                    <span className="text-yellow-300 text-sm font-medium">
+                      💡 Pro Tip: Be specific about your industry and challenges for the best AI recommendations!
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
             </motion.div>
           </motion.div>
         </div>
@@ -690,6 +731,46 @@ Keep it under 200 words total. Be specific, not generic.`
       case 'completed': return 'Assessment Complete • Ready to implement';
       default: return 'AI Discovery Session';
     }
+  };
+
+  const getJourneyProgress = () => {
+    const phases = ['discovery', 'exploration', 'insights', 'completed'];
+    const currentIndex = phases.indexOf(journeyStage);
+    return Math.max(0, ((currentIndex + 1) / phases.length) * 100);
+  };
+
+  const getPhaseInfo = () => {
+    const phases = {
+      discovery: {
+        title: "Discovery Phase",
+        description: "Alex learns about your business",
+        tips: ["Be specific about your industry", "Mention your main challenges", "Share your current tech stack"],
+        icon: Target,
+        color: "blue"
+      },
+      exploration: {
+        title: "Exploration Phase", 
+        description: "Diving deeper into your needs",
+        tips: ["Discuss pain points in detail", "Share your goals and timeline", "Mention budget considerations if comfortable"],
+        icon: MapPin,
+        color: "purple"
+      },
+      insights: {
+        title: "Insights Phase",
+        description: "AI solutions taking shape", 
+        tips: ["Ask specific questions", "Request clarifications", "Type 'assessment' when ready for final roadmap"],
+        icon: Brain,
+        color: "cyan"
+      },
+      completed: {
+        title: "Assessment Complete",
+        description: "Your AI roadmap is ready",
+        tips: ["Review your personalized recommendations", "Contact Glluz Tech to get started", "Type 'restart' for a new assessment"],
+        icon: Trophy,
+        color: "green"
+      }
+    };
+    return phases[journeyStage] || phases.discovery;
   };
 
   return (
@@ -821,6 +902,153 @@ Keep it under 200 words total. Be specific, not generic.`
             </div>
           </div>
         </motion.div>
+
+        {/* Professional Instruction Panel */}
+        <div className="relative z-10">
+          <div className="max-w-6xl mx-auto px-6 py-4">
+            <div className="flex items-center justify-between">
+              {/* Journey Progress */}
+              <motion.div 
+                className="flex items-center space-x-4"
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.8 }}
+              >
+                <div className="bg-gray-900/30 backdrop-blur-xl rounded-2xl p-4 border border-white/10">
+                  <div className="flex items-center space-x-3">
+                    <div className="relative">
+                      {(() => {
+                        const phaseInfo = getPhaseInfo();
+                        const PhaseIcon = phaseInfo.icon;
+                        return <PhaseIcon className={`w-6 h-6 text-${phaseInfo.color}-400`} />;
+                      })()}
+                    </div>
+                    <div>
+                      <div className="text-white font-bold text-sm">{getPhaseInfo().title}</div>
+                      <div className="text-xs text-gray-300">{getPhaseInfo().description}</div>
+                    </div>
+                    <div className="w-px h-8 bg-white/20"></div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-16 h-2 bg-gray-700 rounded-full overflow-hidden">
+                        <motion.div 
+                          className={`h-full bg-gradient-to-r from-${getPhaseInfo().color}-400 to-${getPhaseInfo().color}-300 rounded-full`}
+                          animate={{ width: `${getJourneyProgress()}%` }}
+                          transition={{ duration: 0.8, ease: "easeOut" }}
+                        />
+                      </div>
+                      <span className="text-xs text-gray-400 font-medium">{Math.round(getJourneyProgress())}%</span>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Action Buttons */}
+              <motion.div 
+                className="flex items-center space-x-3"
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 1 }}
+              >
+                <motion.button
+                  onClick={() => setShowInstructions(!showInstructions)}
+                  className="bg-blue-500/20 hover:bg-blue-500/30 border border-blue-400/30 rounded-xl p-3 transition-all duration-300 group"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Info className="w-5 h-5 text-blue-400 group-hover:text-blue-300" />
+                </motion.button>
+                
+                <motion.button
+                  onClick={() => setShowCommands(!showCommands)}
+                  className="bg-purple-500/20 hover:bg-purple-500/30 border border-purple-400/30 rounded-xl p-3 transition-all duration-300 group"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Command className="w-5 h-5 text-purple-400 group-hover:text-purple-300" />
+                </motion.button>
+              </motion.div>
+            </div>
+
+            {/* Expandable Instruction Cards */}
+            <AnimatePresence>
+              {showInstructions && (
+                <motion.div
+                  className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {/* Current Phase Tips */}
+                  <div className="bg-gray-900/30 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <HelpCircle className="w-5 h-5 text-blue-400" />
+                      <h3 className="text-white font-bold">Phase Tips</h3>
+                    </div>
+                    <div className="space-y-2">
+                      {getPhaseInfo().tips.map((tip, i) => (
+                        <div key={i} className="flex items-start space-x-2">
+                          <ChevronRight className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-gray-300 text-sm">{tip}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Journey Overview */}
+                  <div className="bg-gray-900/30 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <MapPin className="w-5 h-5 text-purple-400" />
+                      <h3 className="text-white font-bold">Journey Map</h3>
+                    </div>
+                    <div className="space-y-3">
+                      {['Discovery', 'Exploration', 'Insights', 'Complete'].map((phase, i) => (
+                        <div key={i} className="flex items-center space-x-3">
+                          <div className={`w-2 h-2 rounded-full ${i <= ['discovery', 'exploration', 'insights', 'completed'].indexOf(journeyStage) ? 'bg-green-400' : 'bg-gray-600'}`} />
+                          <span className={`text-sm ${i <= ['discovery', 'exploration', 'insights', 'completed'].indexOf(journeyStage) ? 'text-white font-medium' : 'text-gray-400'}`}>
+                            {phase}
+                          </span>
+                          <Clock className="w-3 h-3 text-gray-500" />
+                          <span className="text-xs text-gray-500">2-3 min</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {showCommands && (
+                <motion.div
+                  className="mt-4"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="bg-gray-900/30 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <Command className="w-5 h-5 text-purple-400" />
+                      <h3 className="text-white font-bold">Quick Commands</h3>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                      {[
+                        { command: "assessment", description: "Get your final AI roadmap", color: "green" },
+                        { command: "restart", description: "Start a new assessment", color: "blue" },
+                        { command: "summary", description: "Quick progress summary", color: "purple" },
+                        { command: "help", description: "Get assistance", color: "orange" }
+                      ].map((cmd, i) => (
+                        <div key={i} className="bg-gray-800/30 rounded-xl p-4 border border-white/5">
+                          <div className={`text-${cmd.color}-400 font-mono text-sm mb-1`}>"{cmd.command}"</div>
+                          <div className="text-gray-300 text-xs">{cmd.description}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
 
         {/* Premium Messages Container */}
         <div className="flex-1 overflow-y-auto p-6 relative z-10">
@@ -1076,9 +1304,34 @@ Keep it under 200 words total. Be specific, not generic.`
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
             >
-              <div className="flex items-center space-x-3 text-gray-300">
-                <Zap className="w-5 h-5 text-blue-400" />
-                <span className="text-sm font-medium">Press Enter to send • Shift+Enter for new line</span>
+              <div className="flex items-center space-x-6 text-gray-300">
+                <div className="flex items-center space-x-2">
+                  <Zap className="w-5 h-5 text-blue-400" />
+                  <span className="text-sm font-medium">Press Enter to send • Shift+Enter for new line</span>
+                </div>
+                
+                {/* Fun Interactive Tip */}
+                {journeyStage !== 'completed' && (
+                  <motion.div 
+                    className="flex items-center space-x-2 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 px-3 py-1 rounded-full border border-yellow-400/20"
+                    animate={{ 
+                      scale: [1, 1.05, 1],
+                      opacity: [0.7, 1, 0.7]
+                    }}
+                    transition={{ 
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    <Sparkles className="w-4 h-4 text-yellow-400" />
+                    <span className="text-xs text-yellow-300 font-medium">
+                      {journeyStage === 'discovery' && "💡 Tell Alex about your business type for better insights"}
+                      {journeyStage === 'exploration' && "🎯 Share your biggest challenges to unlock AI solutions"}
+                      {journeyStage === 'insights' && "🚀 Type 'assessment' when ready for your AI roadmap"}
+                    </span>
+                  </motion.div>
+                )}
               </div>
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-2 bg-white/5 px-4 py-2 rounded-full border border-white/10">
